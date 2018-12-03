@@ -1,12 +1,16 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import rgba from 'polished/lib/color/rgba';
 import { appColor, headerHeight } from 'modules/theme';
 
+import { logOut, login } from 'actions/index';
+
 import { Container, utils } from 'styled-minimal';
+import Icon from 'components/Icon';
 import Logo from 'components/Logo';
 
-const { spacer } = utils;
+const { responsive, spacer } = utils;
 
 const HeaderWrapper = styled.header`
   background-color: ${rgba(appColor, 0.9)};
@@ -44,12 +48,78 @@ const StyledContainer = styled(Container)`
   padding-top: ${spacer(2)};
 `;
 
+const Logout = styled.button`
+  align-items: center;
+  color: #333;
+  display: flex;
+  font-size: 1.3rem;
+  padding: ${spacer(2)};
+  ${responsive({ lg: 'font-size: 1.6rem;' })}; /* stylelint-disable-line */
+  &.active {
+    color: #000;
+  }
+  span {
+    display: inline-block;
+    margin-right: 0.4rem;
+    text-transform: uppercase;
+  }
+`;
+
+const Login = styled.button`
+  align-items: center;
+  color: #333;
+  display: flex;
+  font-size: 1.3rem;
+  padding: ${spacer(2)};
+  ${responsive({ lg: 'font-size: 1.6rem;' })}; /* stylelint-disable-line */
+  &.active {
+    color: #000;
+  }
+  span {
+    display: inline-block;
+    margin-right: 0.4rem;
+    text-transform: uppercase;
+  }
+`;
+
 export default class Header extends React.PureComponent {
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired,
+  };
+
+  handleClickLogout = () => {
+    const { dispatch } = this.props;
+
+    dispatch(logOut());
+  };
+
+  handleClickLogin = () => {
+    const { dispatch } = this.props;
+
+    dispatch(login());
+  };
+
   render() {
+    const { user } = this.props;
     return (
       <HeaderWrapper>
         <StyledContainer>
           <HeaderLogo />
+          { user.isAuthenticated ?
+            (
+              <Logout onClick={this.handleClickLogout}>
+                <span>logout</span>
+                <Icon name="sign-out" color="#333" width={16} />
+              </Logout>
+            ) :
+            (
+              <Login onClick={this.handleClickLogin}>
+                <span>login</span>
+                <Icon name="sign-in" color="#333" width={16} />
+              </Login>
+            )
+          }
         </StyledContainer>
       </HeaderWrapper>
     );
